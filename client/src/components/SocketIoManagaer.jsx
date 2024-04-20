@@ -5,9 +5,15 @@ import { useAtom, atom } from "jotai";
 export const socket = io("http://localhost:5000");
 
 export const charactersAtom = atom([]);
+export const modelArrayAtom = atom(null);
+export const usersAtom = atom(null);
 
 export const SocketIoManager = () => {
   const [_characters, setCharacters] = useAtom(charactersAtom);
+
+  const [_modelArray, setModelArray] = useAtom(modelArrayAtom);
+
+  const [_users, setUsers] = useAtom(usersAtom);
 
   useEffect(() => {
     function onConnect() {
@@ -18,8 +24,9 @@ export const SocketIoManager = () => {
       console.log("Disconnected");
     }
 
-    function onHello() {
-      console.log("Hello");
+    function onHello(value) {
+      setModelArray(value.modelArray);
+      setUsers(value.id);
     }
 
     function onCharacters(value) {

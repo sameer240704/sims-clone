@@ -8,11 +8,14 @@ import {
 import * as THREE from "three";
 import React, { useState } from "react";
 import { HoodieCharacter } from "./HoodieCharacter";
-import { charactersAtom, socket } from "./SocketIoManagaer";
+import { charactersAtom, modelArrayAtom, socket } from "./SocketIoManagaer";
 import { useAtom } from "jotai";
+import Items from "./Items";
 
 const LandingPage = () => {
   const [characters] = useAtom(charactersAtom);
+
+  const [modelArray] = useAtom(modelArrayAtom);
 
   const [floor, setFloor] = useState(false);
   useCursor(floor);
@@ -26,7 +29,9 @@ const LandingPage = () => {
       <Environment preset="sunset" />
       <ambientLight intensity={0.3} />
       <OrbitControls />
-      <ContactShadows blur={3} />
+      {modelArray.items.map((item, id) => (
+        <Items key={`${item.name}-${id}`} item={item} />
+      ))}
       <mesh
         rotation-x={-Math.PI / 2}
         position-y={-0.001}
@@ -35,8 +40,10 @@ const LandingPage = () => {
         }
         onPointerEnter={() => setFloor(true)}
         onPointerLeave={() => setFloor(false)}
+        position-x={modelArray.size[0] / 2}
+        position-z={modelArray.size[1] / 2}
       >
-        <planeGeometry args={[10, 10]} />
+        <planeGeometry args={modelArray.siz} />
         <meshStandardMaterial color="#f0f0f0" />
       </mesh>
       {characters.map((character) => (
