@@ -43,12 +43,13 @@ const LandingPage = () => {
         position-x={modelArray.size[0] / 2}
         position-z={modelArray.size[1] / 2}
       >
-        <planeGeometry args={modelArray.siz} />
+        <planeGeometry args={modelArray.size} />
         <meshStandardMaterial color="#f0f0f0" />
       </mesh>
       {characters.map((character) => (
         <HoodieCharacter
           key={character.id}
+          id={character.id}
           position={
             new THREE.Vector3(
               character.position[0],
@@ -62,14 +63,6 @@ const LandingPage = () => {
           shoeColor={character.shoeColor}
         />
       ))}
-      {/* <HoodieCharacter />
-      <HoodieCharacter
-        position-x={1}
-        hairColor="brown"
-        hoodieColor="green"
-        shortsColor="yellow"
-        shoeColor="black"
-      /> */}
     </>
   );
 };

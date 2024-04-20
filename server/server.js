@@ -35,9 +35,16 @@ const items = {
 };
 
 const modelArray = {
-  size: [10, 10],
+  size: [20, 20],
   gridDivision: 2,
-  items: [{ ...items.chair, gridPosition: [0, 0] }],
+  items: [
+    { ...items.bookshelf, gridPosition: [4, 4] },
+    { ...items.couch, gridPosition: [4, 9] },
+    { ...items.couch, gridPosition: [4, 12], rotation: 2 },
+    { ...items.dining, gridPosition: [15, 3] },
+    { ...items.chair, gridPosition: [13, 12] },
+    { ...items.table, gridPosition: [11, 11] },
+  ],
 };
 
 const generateRandomPosition = () => {

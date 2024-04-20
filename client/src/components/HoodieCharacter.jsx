@@ -9,6 +9,8 @@ import React, { useRef, useState, useEffect, useMemo } from "react";
 import { useGLTF, useAnimations } from "@react-three/drei";
 import { SkeletonUtils } from "three-stdlib";
 import { useFrame, useGraph } from "@react-three/fiber";
+import { useAtom } from "jotai";
+import { usersAtom } from "./SocketIoManagaer";
 
 const movementSpeed = 0.02;
 
@@ -17,6 +19,7 @@ export function HoodieCharacter({
   hoodieColor = "red",
   shortsColor = "black",
   shoeColor = "green",
+  id,
   ...props
 }) {
   const position = useMemo(() => props.position, []);
@@ -25,6 +28,8 @@ export function HoodieCharacter({
   const { scene, materials, animations } = useGLTF(
     "/models/Hoodie Character.glb"
   );
+
+  const [user] = useAtom(usersAtom);
 
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes } = useGraph(clone); // useGraph created two flat object collections for nodes and materials so that two objects can be shown in the scene
@@ -37,7 +42,7 @@ export function HoodieCharacter({
     return () => actions[animation]?.fadeOut(0.32);
   }, [animation, actions]);
 
-  useFrame(() => {
+  useFrame((state) => {
     if (group.current.position.distanceTo(props.position) > 0.1) {
       const direction = group.current.position
         .clone()
@@ -49,6 +54,12 @@ export function HoodieCharacter({
       setAnimation("CharacterArmature|Run");
     } else {
       setAnimation("CharacterArmature|Idle");
+    }
+    if (id === user) {
+      state.camera.position.x = group.current.position.x + 8;
+      state.camera.position.y = group.current.position.y + 8;
+      state.camera.position.z = group.current.position.z + 8;
+      state.camera.lookAt(group.current.position);
     }
   });
 
