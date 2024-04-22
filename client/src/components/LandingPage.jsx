@@ -1,11 +1,5 @@
 /* eslint-disable react/no-unknown-property */
-import {
-  ContactShadows,
-  Environment,
-  OrbitControls,
-  useCursor,
-} from "@react-three/drei";
-import * as THREE from "three";
+import { Environment, OrbitControls, useCursor } from "@react-three/drei";
 import React, { useState } from "react";
 import { HoodieCharacter } from "./HoodieCharacter";
 import {
@@ -17,6 +11,7 @@ import {
 import { useAtom } from "jotai";
 import Items from "./Items";
 import { useThree } from "@react-three/fiber";
+import { useGrid } from "../hooks/useGrid";
 
 const LandingPage = () => {
   const [characters] = useAtom(charactersAtom);
@@ -28,13 +23,19 @@ const LandingPage = () => {
   const [floor, setFloor] = useState(false);
   useCursor(floor);
 
+  const { vector3ToGrid, gridToVector3 } = useGrid();
+
   const scene = useThree((state) => state.scene);
 
   const moveCharacter = (event) => {
     const character = scene.getObjectByName(`character-${user}`);
     if (!character) return;
 
-    socket.emit("move");
+    socket.emit(
+      "move",
+      vector3ToGrid(character.position),
+      vector3ToGrid(event.point)
+    );
   };
 
   return (
@@ -48,9 +49,7 @@ const LandingPage = () => {
       <mesh
         rotation-x={-Math.PI / 2}
         position-y={-0.001}
-        onClick={(event) =>
-          socket.emit("move", [event.point.x, 0, event.point.z])
-        }
+        onClick={moveCharacter}
         onPointerEnter={() => setFloor(true)}
         onPointerLeave={() => setFloor(false)}
         position-x={modelArray.size[0] / 2}
@@ -63,15 +62,8 @@ const LandingPage = () => {
         <HoodieCharacter
           key={character.id}
           id={character.id}
-          position={
-            new THREE.Vector3(
-              character.position[0] / modelArray.gridDivision +
-                1 / modelArray.gridDivision / 2,
-              0,
-              character.position[1] / modelArray.gridDivision +
-                1 / modelArray.gridDivision / 2
-            )
-          }
+          path={character.path}
+          position={gridToVector3(character.position)}
           hairColor={character.hairColor}
           hoodieColor={character.hoodieColor}
           shortsColor={character.shortsColor}
