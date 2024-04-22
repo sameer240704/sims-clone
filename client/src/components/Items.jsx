@@ -13,14 +13,18 @@ const Items = ({ item }) => {
   const { scene } = useGLTF(`models/Items/${name}.glb`);
 
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
+
+  const width = rotation === 1 || rotation === 3 ? size[1] : size[0];
+  const height = rotation === 1 || rotation === 3 ? size[0] : size[1];
+
   return (
     <primitive
       object={clone}
       position={[
-        size[0] / modelArray.gridDivision / 2 +
+        width / modelArray.gridDivision / 2 +
           gridPosition[0] / modelArray.gridDivision,
         0,
-        size[1] / modelArray.gridDivision / 2 +
+        height / modelArray.gridDivision / 2 +
           gridPosition[1] / modelArray.gridDivision,
       ]}
       rotation-y={[((rotation || 0) * Math.PI) / 2]}

@@ -8,20 +8,33 @@ import {
 import * as THREE from "three";
 import React, { useState } from "react";
 import { HoodieCharacter } from "./HoodieCharacter";
-import { charactersAtom, modelArrayAtom, socket } from "./SocketIoManagaer";
+import {
+  charactersAtom,
+  modelArrayAtom,
+  socket,
+  usersAtom,
+} from "./SocketIoManagaer";
 import { useAtom } from "jotai";
 import Items from "./Items";
+import { useThree } from "@react-three/fiber";
 
 const LandingPage = () => {
   const [characters] = useAtom(charactersAtom);
 
   const [modelArray] = useAtom(modelArrayAtom);
 
+  const [user] = useAtom(usersAtom);
+
   const [floor, setFloor] = useState(false);
   useCursor(floor);
 
+  const scene = useThree((state) => state.scene);
+
   const moveCharacter = (event) => {
-    socket.emit("move", [event.point.x, 0, event.point.z]);
+    const character = scene.getObjectByName(`character-${user}`);
+    if (!character) return;
+
+    socket.emit("move");
   };
 
   return (
@@ -52,9 +65,11 @@ const LandingPage = () => {
           id={character.id}
           position={
             new THREE.Vector3(
-              character.position[0],
-              character.position[1],
-              character.position[2]
+              character.position[0] / modelArray.gridDivision +
+                1 / modelArray.gridDivision / 2,
+              0,
+              character.position[1] / modelArray.gridDivision +
+                1 / modelArray.gridDivision / 2
             )
           }
           hairColor={character.hairColor}
