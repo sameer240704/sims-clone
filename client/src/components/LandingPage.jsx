@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unknown-property */
-import { Environment, OrbitControls, useCursor } from "@react-three/drei";
+import { Environment, Grid, OrbitControls, useCursor } from "@react-three/drei";
 import React, { useState } from "react";
 import { HoodieCharacter } from "./HoodieCharacter";
 import {
@@ -15,9 +15,7 @@ import { useGrid } from "../hooks/useGrid";
 
 const LandingPage = () => {
   const [characters] = useAtom(charactersAtom);
-
   const [modelArray] = useAtom(modelArrayAtom);
-
   const [user] = useAtom(usersAtom);
 
   const [floor, setFloor] = useState(false);
@@ -27,7 +25,7 @@ const LandingPage = () => {
 
   const scene = useThree((state) => state.scene);
 
-  const moveCharacter = (event) => {
+  const onCharacterMove = (event) => {
     const character = scene.getObjectByName(`character-${user}`);
     if (!character) return;
 
@@ -49,7 +47,7 @@ const LandingPage = () => {
       <mesh
         rotation-x={-Math.PI / 2}
         position-y={-0.001}
-        onClick={moveCharacter}
+        onClick={onCharacterMove}
         onPointerEnter={() => setFloor(true)}
         onPointerLeave={() => setFloor(false)}
         position-x={modelArray.size[0] / 2}
@@ -58,6 +56,7 @@ const LandingPage = () => {
         <planeGeometry args={modelArray.size} />
         <meshStandardMaterial color="#f0f0f0" />
       </mesh>
+      <Grid infiniteGrid fadeDistance={40} fadeStrength={5} />
       {characters.map((character) => (
         <HoodieCharacter
           key={character.id}

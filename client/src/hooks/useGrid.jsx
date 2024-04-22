@@ -7,18 +7,18 @@ export const useGrid = () => {
 
   const vector3ToGrid = (vector3) => {
     return [
-      Math.floor(vector3.x * modelArray.gridDivison),
-      Math.floor(vector3.z * modelArray.gridDivison),
+      Math.floor(vector3.x * modelArray.gridDivision),
+      Math.floor(vector3.z * modelArray.gridDivision),
     ];
   };
 
   const gridToVector3 = (gridPosition, width = 1, height = 1) => {
     return new THREE.Vector3(
-      width / modelArray.gridDivison / 2 +
-        gridPosition[0] / modelArray.gridDivison,
+      width / modelArray.gridDivision / 2 +
+        gridPosition[0] / modelArray.gridDivision,
       0,
-      height / modelArray.gridDivison / 2 +
-        gridPosition[1] / modelArray.gridDivison
+      height / modelArray.gridDivision / 2 +
+        gridPosition[1] / modelArray.gridDivision
     );
   };
 

@@ -1,7 +1,7 @@
 import { Server } from "socket.io";
-import pathfinding from "pathfinding";
+import PF from "pathfinding";
 
-const finder = new pathfinding.AStarFinder({
+const finder = new PF.AStarFinder({
   allowDiagonal: true,
   dontCrossCorners: true,
 });
@@ -418,7 +418,7 @@ const modelArray = {
   ],
 };
 
-const grid = new pathfinding.Grid(
+const grid = new PF.Grid(
   modelArray.size[0] * modelArray.gridDivision,
   modelArray.size[1] * modelArray.gridDivision
 );
@@ -430,7 +430,7 @@ const findPath = (start, end) => {
 };
 
 const updateGrid = () => {
-  modelArray.forEach((element) => {
+  modelArray.items.forEach((element) => {
     if (element.walkable || element.wall) return;
 
     const width =
@@ -454,13 +454,15 @@ const updateGrid = () => {
   });
 };
 
+updateGrid();
+
 const generateRandomPosition = () => {
-  for (let i = 0; i < 50; i++) {
-    let x = Math.floor(
-      Math.random() * modelArray.size[1] * modelArray.gridDivision
-    );
-    let y = Math.floor(
+  for (let i = 0; i < 100; i++) {
+    const x = Math.floor(
       Math.random() * modelArray.size[0] * modelArray.gridDivision
+    );
+    const y = Math.floor(
+      Math.random() * modelArray.size[1] * modelArray.gridDivision
     );
     if (grid.isWalkableAt(x, y)) return [x, y];
   }
@@ -499,7 +501,9 @@ io.on("connection", (socket) => {
     if (!path) return;
     character.position = from;
     character.path = path;
-    io.emit("characters", characters);
+
+    console.log("Character: ", character);
+    io.emit("playerMove", character);
   });
 
   socket.on("disconnect", () => {

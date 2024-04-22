@@ -10,7 +10,7 @@ const Items = ({ item }) => {
 
   const [modelArray] = useAtom(modelArrayAtom);
 
-  const { scene } = useGLTF(`models/Items/${name}.glb`);
+  const { scene } = useGLTF(`/models/Items/${name}.glb`);
 
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
 

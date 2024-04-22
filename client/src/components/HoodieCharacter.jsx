@@ -11,6 +11,7 @@ import { SkeletonUtils } from "three-stdlib";
 import { useFrame, useGraph } from "@react-three/fiber";
 import { useAtom } from "jotai";
 import { usersAtom } from "./SocketIoManagaer";
+import { useGrid } from "../hooks/useGrid";
 
 const movementSpeed = 0.02;
 
@@ -24,12 +25,24 @@ export function HoodieCharacter({
 }) {
   const position = useMemo(() => props.position, []);
 
+  const [user] = useAtom(usersAtom);
+  const [path, setPath] = useState();
+
+  const { gridToVector3 } = useGrid();
+
+  useEffect(() => {
+    const path = [];
+    props.path?.forEach((gridPosition) => {
+      path.push(gridToVector3(gridPosition));
+    });
+    setPath(path);
+  }, [props.path]);
+
   const group = useRef();
+
   const { scene, materials, animations } = useGLTF(
     "/models/Hoodie Character.glb"
   );
-
-  const [user] = useAtom(usersAtom);
 
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes } = useGraph(clone); // useGraph created two flat object collections for nodes and materials so that two objects can be shown in the scene
@@ -43,15 +56,17 @@ export function HoodieCharacter({
   }, [animation, actions]);
 
   useFrame((state) => {
-    if (group.current.position.distanceTo(props.position) > 0.1) {
+    if (path?.length && group.current.position.distanceTo(path[0]) > 0.1) {
       const direction = group.current.position
         .clone()
-        .sub(props.position)
+        .sub(path[0])
         .normalize()
         .multiplyScalar(movementSpeed);
       group.current.position.sub(direction);
-      group.current.lookAt(props.position);
+      group.current.lookAt(path[0]);
       setAnimation("CharacterArmature|Run");
+    } else if (path?.length) {
+      path.shift();
     } else {
       setAnimation("CharacterArmature|Idle");
     }
